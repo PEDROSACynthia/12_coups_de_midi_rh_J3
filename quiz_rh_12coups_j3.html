@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>🎉 Les 12 Coups du RH – J2</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#0a0f1e;
+  --stage:#0f1829;
+  --gold:#f5c518;
+  --gold-dark:#c49a0e;
+  --gold-glow:rgba(245,197,24,0.35);
+  --white:#f0ecdc;
+  --correct:#27c97e;
+  --wrong:#e8334a;
+  --purple:#8b35cc;
+  --purple-light:#b060e8;
+  --purple-glow:rgba(176,96,232,0.35);
+  --card:#121e32;
+  --card2:#0e1928;
+  --border:#1e3050;
+  --muted:#6a8aaa;
+  --red-tv:#e8334a;
+}
+
+body{
+  font-family:'Nunito',sans-serif;
+  background:var(--bg);
+  color:var(--white);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  overflow-x:hidden;
+}
+
+/* Scanlines TV effect */
+body::after{
+  content:'';
+  position:fixed;
+  inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);
+  pointer-events:none;
+  z-index:9999;
+}
+
+/* Ambient light */
+body::before{
+  content:'';
+  position:fixed;
+  top:-10%;left:50%;
+  transform:translateX(-50%);
+  width:100vw;height:55vh;
+  background:radial-gradient(ellipse at center,rgba(245,197,24,0.06) 0%,transparent 65%);
+  pointer-events:none;z-index:0;
+  animation:ambientPulse 5s ease-in-out infinite;
+}
+@keyframes ambientPulse{0%,100%{opacity:.6}50%{opacity:1}}
+
+/* ─── HEADER ─── */
+header{
+  position:relative;z-index:10;
+  width:100%;max-width:920px;
+  padding:18px 24px 10px;
+  display:flex;align-items:center;
+  justify-content:space-between;gap:12px;
+  flex-wrap:wrap;
+  border-bottom:1px solid rgba(245,197,24,0.1);
+}
+
+.logo{display:flex;flex-direction:column;line-height:1.1}
+.logo-main{
+  font-family:'Orbitron',sans-serif;
+  font-size:clamp(13px,2.8vw,19px);font-weight:900;
+  color:var(--gold);letter-spacing:.06em;
+  text-shadow:0 0 24px var(--gold-glow);
+}
+.logo-sub{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.14em;margin-top:3px}
+
+.hud{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+
+.hud-box{
+  display:flex;flex-direction:column;align-items:center;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:10px;padding:7px 14px;min-width:72px;
+}
+.hud-box.gold-box{border-color:rgba(245,197,24,0.4);box-shadow:0 0 16px rgba(245,197,24,0.15)}
+.hud-label{font-size:8px;text-transform:uppercase;letter-spacing:.16em;color:var(--muted);font-weight:700}
+.hud-val{font-family:'Orbitron',sans-serif;font-size:21px;font-weight:700;color:var(--white);line-height:1.1}
+.hud-box.gold-box .hud-val{color:var(--gold)}
+.hud-val.urgent{color:var(--wrong);animation:urgentBlink .5s ease-in-out infinite}
+@keyframes urgentBlink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ─── PROGRESS ─── */
+.progress-wrap{
+  position:relative;z-index:10;
+  width:100%;max-width:920px;
+  padding:10px 24px 14px;
+}
+.progress-meta{
+  display:flex;justify-content:space-between;
+  font-size:10px;color:var(--muted);font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px;
+}
+.progress-bar{height:5px;background:var(--border);border-radius:99px;overflow:hidden}
+.progress-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--gold-dark),var(--gold));
+  border-radius:99px;
+  transition:width .5s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 0 10px var(--gold-glow);
+}
+.q-dots{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;margin-top:8px}
+.q-dot{width:9px;height:9px;border-radius:50%;background:var(--border);transition:all .3s}
+.q-dot.ok{background:var(--correct)}
+.q-dot.ko{background:var(--wrong)}
+.q-dot.now{background:var(--gold);box-shadow:0 0 7px var(--gold)}
+
+/* ─── MAIN ─── */
+main{
+  position:relative;z-index:10;
+  width:100%;max-width:920px;
+  padding:0 24px 48px;
+}
+
+/* ─── CARD ─── */
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:36px 40px;
+  box-shadow:0 28px 64px rgba(0,0,0,.5);
+  position:relative;overflow:hidden;
+  animation:cardSlide .38s cubic-bezier(.4,0,.2,1);
+}
+@keyframes cardSlide{
+  from{opacity:0;transform:translateY(22px) scale(.97)}
+  to{opacity:1;transform:none}
+}
+.card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+
+/* ─── BADGE ─── */
+.q-badge{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:10px;font-weight:800;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:14px;
+}
+.badge-dot{width:7px;height:7px;background:var(--gold);border-radius:50%;box-shadow:0 0 8px var(--gold)}
+.badge-dot.purple{background:var(--purple-light);box-shadow:0 0 8px var(--purple-light)}
+
+.q-text{font-size:clamp(15px,2.3vw,19px);font-weight:700;line-height:1.55;margin-bottom:26px;color:var(--white)}
+
+/* ─── OPTIONS ─── */
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+@media(max-width:520px){.opts{grid-template-columns:1fr}}
+
+.opt-btn{
+  background:var(--card2);
+  border:1.5px solid var(--border);
+  border-radius:12px;
+  padding:13px 16px;
+  text-align:left;cursor:pointer;
+  color:var(--white);
+  font-family:'Nunito',sans-serif;
+  font-size:14px;font-weight:600;
+  display:flex;align-items:center;gap:11px;
+  transition:border-color .2s,background .2s,transform .15s;
+}
+.opt-btn:hover:not(:disabled){
+  border-color:var(--gold);
+  background:rgba(245,197,24,0.07);
+  transform:translateY(-2px);
+}
+.opt-btn:active:not(:disabled){transform:scale(.98)}
+.opt-letter{
+  font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;
+  color:var(--gold);min-width:22px;height:22px;
+  background:rgba(245,197,24,0.1);border-radius:5px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.opt-btn.correct{border-color:var(--correct);background:rgba(39,201,126,.1);animation:popCorrect .35s ease}
+.opt-btn.correct .opt-letter{background:rgba(39,201,126,.2);color:var(--correct)}
+.opt-btn.wrong{border-color:var(--wrong);background:rgba(232,51,74,.1);animation:shakeWrong .4s ease}
+.opt-btn.wrong .opt-letter{background:rgba(232,51,74,.2);color:var(--wrong)}
+.opt-btn:disabled{cursor:default}
+
+@keyframes popCorrect{0%{transform:scale(1)}35%{transform:scale(1.03)}100%{transform:scale(1)}}
+@keyframes shakeWrong{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+
+/* ─── FEEDBACK ─── */
+.feedback{
+  margin-top:18px;border-radius:11px;padding:14px 18px;
+  font-size:13.5px;font-weight:600;line-height:1.65;
+  display:none;animation:fadeUp .3s ease;
+}
+.feedback.correct{background:rgba(39,201,126,.09);border:1px solid rgba(39,201,126,.3);color:#8fefbf}
+.feedback.wrong{background:rgba(232,51,74,.09);border:1px solid rgba(232,51,74,.3);color:#f0a0a8}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.fb-icon{font-size:17px;margin-right:7px}
+
+/* ─── BUTTONS ─── */
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:11px 26px;border-radius:10px;border:none;cursor:pointer;
+  font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;
+  letter-spacing:.04em;text-transform:uppercase;
+  transition:transform .15s,box-shadow .15s,opacity .15s;
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.35)}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.5;cursor:default;transform:none;box-shadow:none}
+.btn-gold{background:linear-gradient(135deg,var(--gold-dark),var(--gold));color:#140e00;box-shadow:0 4px 18px rgba(245,197,24,.3)}
+.btn-purple{background:linear-gradient(135deg,var(--purple),var(--purple-light));color:#fff;box-shadow:0 4px 18px var(--purple-glow)}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--muted)}
+
+.action-row{display:flex;justify-content:flex-end;gap:9px;margin-top:22px;flex-wrap:wrap}
+
+/* ─── SCREENS ─── */
+.screen{display:none}
+.screen.active{display:block}
+
+/* ─── START ─── */
+#startScreen{text-align:center;padding:36px 0 24px}
+.start-glow{font-size:62px;display:block;margin-bottom:14px;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.start-title{
+  font-family:'Orbitron',sans-serif;
+  font-size:clamp(18px,4.5vw,32px);font-weight:900;
+  color:var(--gold);text-shadow:0 0 32px var(--gold-glow);
+  margin-bottom:6px;line-height:1.2;
+}
+.start-day{
+  font-family:'Orbitron',sans-serif;font-size:clamp(10px,1.8vw,13px);
+  color:var(--purple-light);letter-spacing:.12em;margin-bottom:4px;
+  text-shadow:0 0 16px var(--purple-glow);
+}
+.start-topic{color:var(--muted);font-size:13px;font-weight:700;margin-bottom:28px;line-height:1.5}
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:32px;text-align:left}
+.feat{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.feat-ico{font-size:20px;margin-bottom:5px;display:block}
+.feat-title{color:var(--gold);font-weight:800;font-size:12px;margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em}
+.feat-desc{color:var(--muted);font-size:12px;font-weight:600}
+
+/* ─── PART TRANSITION ─── */
+#partScreen{text-align:center;padding:36px 20px}
+.part-star{font-size:56px;display:block;animation:starGlow 2s ease-in-out infinite}
+@keyframes starGlow{0%,100%{filter:drop-shadow(0 0 10px var(--gold))}50%{filter:drop-shadow(0 0 28px var(--purple-light))}}
+.part-title{
+  font-family:'Orbitron',sans-serif;font-size:clamp(14px,3vw,22px);
+  font-weight:900;color:var(--purple-light);letter-spacing:.08em;
+  text-shadow:0 0 22px var(--purple-glow);margin:10px 0;
+  text-transform:uppercase;
+}
+
+/* ─── MYSTERY STAR ─── */
+.mystery-header{text-align:center;margin-bottom:22px}
+
+.letter-row{
+  display:flex;flex-wrap:wrap;gap:5px;
+  justify-content:center;margin:18px 0;
+}
+.lc{
+  width:36px;height:42px;
+  background:var(--card2);border:1.5px solid var(--border);
+  border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;color:var(--white);
+  transition:all .35s;
+}
+.lc.sp{background:transparent;border-color:transparent;width:16px}
+.lc.hint{
+  background:rgba(176,96,232,.2);border-color:var(--purple-light);
+  color:var(--purple-light);box-shadow:0 0 12px var(--purple-glow);
+}
+.lc.revealed{
+  background:rgba(245,197,24,.15);border-color:var(--gold);
+  color:var(--gold);box-shadow:0 0 10px var(--gold-glow);
+  animation:cellPop .3s ease;
+}
+@keyframes cellPop{0%{transform:scale(.7)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+
+.myst-meta{
+  text-align:center;font-size:12px;color:var(--muted);
+  font-weight:700;letter-spacing:.08em;margin-bottom:12px;
+}
+
+.input-row{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;justify-content:center}
+.myst-input{
+  flex:1;min-width:180px;max-width:340px;
+  background:var(--card2);border:1.5px solid var(--border);
+  border-radius:10px;padding:11px 15px;
+  color:var(--white);font-family:'Nunito',sans-serif;
+  font-size:15px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.09em;outline:none;
+  transition:border-color .2s,box-shadow .2s;
+}
+.myst-input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(245,197,24,.15)}
+.myst-input::placeholder{font-size:12px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--muted)}
+
+/* ─── FINAL STAR (bonus) ─── */
+#finalStarScreen{text-align:center;padding:16px 0}
+.final-star-title{
+  font-family:'Orbitron',sans-serif;font-size:clamp(13px,2.5vw,19px);
+  font-weight:900;color:var(--gold);letter-spacing:.07em;
+  text-shadow:0 0 24px var(--gold-glow);margin-bottom:20px;
+  text-transform:uppercase;
+}
+.final-star-subtitle{color:var(--muted);font-size:13px;font-weight:700;margin-bottom:24px}
+.final-letters{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin:20px 0}
+.fl-cell{
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+}
+.fl-hint{
+  font-size:10px;font-weight:800;color:var(--purple-light);
+  text-transform:uppercase;letter-spacing:.05em;
+  font-family:'Orbitron',sans-serif;
+}
+.fl-box{
+  width:46px;height:52px;
+  background:var(--card2);border:1.5px solid var(--border);
+  border-radius:9px;display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;
+  color:transparent;transition:all .5s;
+}
+.fl-box.unlock{
+  background:linear-gradient(135deg,rgba(245,197,24,.2),rgba(176,96,232,.2));
+  border-color:var(--gold);color:var(--gold);
+  box-shadow:0 0 18px var(--gold-glow);
+  animation:goldenPop .5s ease;
+}
+@keyframes goldenPop{0%{transform:scale(.5) rotate(-10deg)}60%{transform:scale(1.15) rotate(3deg)}100%{transform:scale(1) rotate(0)}}
+
+.final-word-reveal{
+  font-family:'Orbitron',sans-serif;
+  font-size:clamp(20px,4vw,36px);font-weight:900;
+  color:var(--gold);letter-spacing:.14em;
+  text-shadow:0 0 40px var(--gold-glow),0 0 80px rgba(245,197,24,.2);
+  margin:10px 0 4px;
+}
+.final-word-sub{color:var(--purple-light);font-size:13px;font-weight:700;letter-spacing:.06em}
+
+/* ─── END ─── */
+#endScreen{text-align:center;padding:16px 0}
+.trophy{font-size:68px;display:block;animation:trophySpin .8s ease;margin-bottom:12px}
+@keyframes trophySpin{0%{transform:rotate(-15deg) scale(.7)}60%{transform:rotate(5deg) scale(1.1)}100%{transform:rotate(0) scale(1)}}
+.end-title{
+  font-family:'Orbitron',sans-serif;font-size:clamp(15px,3.5vw,26px);
+  font-weight:900;color:var(--gold);margin-bottom:6px;line-height:1.2;
+}
+.end-msg{color:var(--muted);font-size:13px;font-weight:600;margin-bottom:22px;font-style:italic}
+.results-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:24px}
+.rt{background:var(--card2);border:1px solid var(--border);border-radius:13px;padding:18px 10px}
+.rt-num{font-family:'Orbitron',sans-serif;font-size:30px;font-weight:900;color:var(--gold);display:block}
+.rt-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-top:3px}
+.corr-title{
+  font-family:'Orbitron',sans-serif;font-size:12px;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.1em;margin:24px 0 12px;text-align:left;
+}
+.corr-item{
+  background:var(--card2);border:1px solid var(--border);
+  border-radius:11px;padding:12px 15px;margin-bottom:7px;
+  display:flex;align-items:flex-start;gap:11px;text-align:left;font-size:12.5px;
+}
+.ci-ico{font-size:16px;flex-shrink:0;margin-top:1px}
+.ci-q{font-weight:700;color:var(--white);margin-bottom:3px}
+.ci-a{color:var(--muted);font-weight:600}
+.ci-a strong{color:var(--gold)}
+
+/* ─── SPOTLIGHT FLASH ─── */
+.sf{
+  position:fixed;inset:0;
+  background:radial-gradient(ellipse at center,rgba(245,197,24,.18) 0%,transparent 65%);
+  pointer-events:none;z-index:9998;opacity:0;transition:opacity .08s;
+}
+.sf.show{opacity:1}
+
+@media(max-width:600px){
+  .card{padding:22px 18px}
+  header{padding:12px 16px 8px}
+  main{padding:0 14px 32px}
+  .progress-wrap{padding:8px 14px 12px}
+}
+</style>
+</head>
+<body>
+
+<div class="sf" id="sf"></div>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="logo">
+    <span class="logo-main">🎉 12 Coups du RH – J3</span>
+    <span class="logo-sub">Dispositifs · Modalités · IA &amp; Digital</span>
+  </div>
+  <div class="hud">
+    <div class="hud-box gold-box">
+      <span class="hud-label">Score</span>
+      <span class="hud-val" id="scoreVal">0</span>
+    </div>
+    <div class="hud-box">
+      <span class="hud-label">Temps</span>
+      <span class="hud-val" id="timerVal">30</span>
+    </div>
+  </div>
+</header>
+
+<!-- ── PROGRESS ── -->
+<div class="progress-wrap">
+  <div class="progress-meta">
+    <span id="pgLabel">Question 0 / 20</span>
+    <span id="pgPct">0 %</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="pgFill" style="width:0%"></div></div>
+  <div class="q-dots" id="qDots"></div>
+</div>
+
+<!-- ── MAIN ── -->
+<main>
+
+  <!-- START -->
+  <div id="startScreen" class="screen active card">
+    <span class="start-glow">🎉</span>
+    <div class="start-day">Journée 3</div>
+    <div class="start-title">Les 12 Coups du RH</div>
+    <p class="start-topic">Dispositifs de formation · Modalités pédagogiques<br>Digitalisation &amp; Intelligence Artificielle</p>
+    <div class="feat-grid">
+      <div class="feat"><span class="feat-ico">🎯</span><div class="feat-title">Manche 1 – QCM</div><div class="feat-desc">10 questions · 4 choix · 10 pts chacune</div></div>
+      <div class="feat"><span class="feat-ico">⭐</span><div class="feat-title">Étoile Mystérieuse</div><div class="feat-desc">10 mots cachés · 1 lettre indice · 15 pts</div></div>
+      <div class="feat"><span class="feat-ico">🏆</span><div class="feat-title">Étoile Finale</div><div class="feat-desc">Un mot secret révélé par vos réponses</div></div>
+      <div class="feat"><span class="feat-ico">⏱️</span><div class="feat-title">Chronomètre</div><div class="feat-desc">30 secondes par question</div></div>
+    </div>
+    <button class="btn btn-gold" onclick="startGame()">🎬 Lancer le jeu</button>
+  </div>
+
+  <!-- PART 2 TRANSITION -->
+  <div id="partScreen" class="screen card">
+    <div style="text-align:center;padding:20px 0">
+      <span class="part-star">⭐</span>
+      <div class="part-title">Étoile Mystérieuse RH</div>
+      <p style="color:var(--muted);font-size:13px;font-weight:600;margin:14px 0 26px;line-height:1.7">
+        Bravo pour la Manche 1 !<br>
+        Chaque bonne réponse va révéler une lettre du mot mystère final.<br>
+        Lisez la définition, devinez le mot à partir de l'indice.
+      </p>
+      <button class="btn btn-purple" onclick="startPart2()">⭐ Démarrer l'Étoile Mystérieuse</button>
+    </div>
+  </div>
+
+  <!-- QCM -->
+  <div id="qcmScreen" class="screen card">
+    <div class="q-badge"><span class="badge-dot"></span><span id="qcmBadge">Question 1/10 · Manche 1</span></div>
+    <p class="q-text" id="qcmText"></p>
+    <div class="opts" id="optsGrid"></div>
+    <div class="feedback" id="qcmFb"></div>
+    <div class="action-row"><button class="btn btn-gold" id="nextQcmBtn" style="display:none" onclick="nextQ()">Suite →</button></div>
+  </div>
+
+  <!-- MYSTERY -->
+  <div id="mystScreen" class="screen card">
+    <div class="mystery-header">
+      <span class="part-star" style="font-size:36px">⭐</span>
+      <div class="part-title" style="font-size:clamp(12px,2vw,16px)">Étoile Mystérieuse RH</div>
+    </div>
+    <div class="q-badge"><span class="badge-dot purple"></span><span id="mystBadge">Question 11/20 · Manche 2</span></div>
+    <p class="q-text" id="mystText"></p>
+    <div class="myst-meta" id="mystMeta"></div>
+    <div class="letter-row" id="letterRow"></div>
+    <div class="input-row">
+      <input class="myst-input" id="mystInput" type="text" placeholder="Tapez votre réponse…" autocomplete="off" onkeydown="if(event.key==='Enter')checkMyst()"/>
+      <button class="btn btn-purple" onclick="checkMyst()">✓ Valider</button>
+    </div>
+    <div class="feedback" id="mystFb"></div>
+    <div class="action-row"><button class="btn btn-gold" id="nextMystBtn" style="display:none" onclick="nextQ()">Suite →</button></div>
+  </div>
+
+  <!-- FINAL STAR -->
+  <div id="finalStarScreen" class="screen card">
+    <div class="final-star-title">🌟 L'Étoile Mystérieuse Finale</div>
+    <p class="final-star-subtitle">Chaque bonne réponse de la Manche 2 révèle une lettre…<br>Découvrez le mot caché !</p>
+    <div class="final-letters" id="finalLetters"></div>
+    <div id="finalWordReveal" style="display:none">
+      <div class="final-word-reveal" id="finalWordText"></div>
+      <div class="final-word-sub" id="finalWordSub"></div>
+    </div>
+    <div class="action-row" style="justify-content:center;margin-top:28px">
+      <button class="btn btn-gold" onclick="showEnd()">Voir les résultats →</button>
+    </div>
+  </div>
+
+  <!-- END -->
+  <div id="endScreen" class="screen card">
+    <span class="trophy" id="trophyEmoji">🏆</span>
+    <div class="end-title" id="endTitle">Résultats</div>
+    <p class="end-msg" id="endMsg"></p>
+    <div class="results-grid">
+      <div class="rt"><span class="rt-num" id="endScore">0</span><span class="rt-lbl">Points</span></div>
+      <div class="rt"><span class="rt-num" id="endPct">0%</span><span class="rt-lbl">Réussite</span></div>
+      <div class="rt"><span class="rt-num" id="endCorrect">0/20</span><span class="rt-lbl">Bonnes rép.</span></div>
+      <div class="rt"><span class="rt-num" id="endTime">0s</span><span class="rt-lbl">Temps total</span></div>
+    </div>
+    <div class="corr-title">📋 Correction complète</div>
+    <div id="corrList"></div>
+    <div style="text-align:center;margin-top:26px">
+      <button class="btn btn-gold" onclick="restartGame()">🔄 Rejouer</button>
+    </div>
+  </div>
+
+</main>
+
+<script>
+/* ══ DATA ══════════════════════════════════════════════════════════ */
+const QCM = [
+  {
+    q:"Un salarié souhaite changer complètement de métier tout en conservant son salaire pendant sa formation.",
+    opts:["CPF","VAE","PTP","CEP"],ans:2,
+    exp:"Le Projet de Transition Professionnelle permet de financer une reconversion professionnelle et peut permettre le maintien du salaire sous certaines conditions."
+  },
+  {
+    q:"Quel dispositif permet principalement de faire reconnaître officiellement une expérience professionnelle ?",
+    opts:["VAE","CPF","CEP","AFEST"],ans:0,
+    exp:"La Validation des Acquis de l'Expérience permet d'obtenir une certification grâce à l'expérience professionnelle."
+  },
+  {
+    q:"Lequel de ces dispositifs est gratuit et n'a pas vocation à financer une formation ?",
+    opts:["CPF","Bilan de compétences","CEP","PTP"],ans:2,
+    exp:"Le Conseil en Évolution Professionnelle est un service gratuit d'accompagnement de projet professionnel."
+  },
+  {
+    q:"Quel délai l'employeur possède-t-il pour répondre à une demande CPF réalisée sur le temps de travail ?",
+    opts:["8 jours","15 jours","60 jours","30 jours"],ans:3,
+    exp:"L'employeur dispose de 30 jours calendaires pour répondre à une demande CPF effectuée sur le temps de travail. L'absence de réponse vaut acceptation."
+  },
+  {
+    q:"Quelle modalité est généralement considérée comme offrant le meilleur équilibre entre efficacité pédagogique, flexibilité et maîtrise des coûts ?",
+    opts:["Présentiel","Distanciel","Blended Learning","MOOC"],ans:2,
+    exp:"Le Blended Learning (formation mixte) combine le meilleur du présentiel et du distanciel pour optimiser efficacité et coûts."
+  },
+  {
+    q:"Quel acteur finance principalement les Projets de Transition Professionnelle ?",
+    opts:["OPCO","France Travail","Transition Pro","AGEFIPH"],ans:2,
+    exp:"Transition Pro (ex-FONGECIF) est l'organisme paritaire qui instruit, finance et accompagne les PTP."
+  },
+  {
+    q:"Quel dispositif d'alternance est destiné principalement à un salarié déjà en poste souhaitant évoluer ou se reconvertir ?",
+    opts:["Apprentissage","Professionnalisation","CPF","Pro-A"],ans:3,
+    exp:"La Pro-A (reconversion ou promotion par alternance) est réservée aux salariés déjà en CDI souhaitant évoluer ou se reconvertir."
+  },
+  {
+    q:"Dans une AFEST, quel élément est obligatoire pour que le dispositif soit reconnu comme action de formation ?",
+    opts:["Une salle de formation","Des phases réflexives","Une certification RNCP","Une classe virtuelle"],ans:1,
+    exp:"L'AFEST requiert obligatoirement des phases réflexives organisées, permettant au salarié de prendre du recul sur les situations de travail vécues."
+  },
+  {
+    q:"Que signifie l'acronyme COOC ?",
+    opts:["Corporate Online Course","Certified Online Course","Continuous Online Course","Collaborative Online Course"],ans:0,
+    exp:"Le COOC (Corporate Online Course) est une formation en ligne conçue spécifiquement par et pour une entreprise, pour diffuser sa culture et ses processus."
+  },
+  {
+    q:"Quelle évaluation mesure le transfert réel des acquis en situation de travail ?",
+    opts:["Évaluation formative","Évaluation diagnostique","Évaluation continue","Évaluation à froid"],ans:3,
+    exp:"L'évaluation à froid mesure, plusieurs semaines après la formation, le transfert effectif des apprentissages dans le contexte professionnel."
+  }
+];
+
+const MYSTERY = [
+  {
+    q:"Je suis un droit attaché à la personne. Je permets de financer des formations tout au long de la vie professionnelle.",
+    ans:"CPF",
+    exp:"Le Compte Personnel de Formation (CPF) est un droit universel alimenté en euros permettant de financer des formations certifiantes."
+  },
+  {
+    q:"Je suis un dispositif permettant à un salarié de changer de métier grâce à une formation certifiante longue avec possibilité de maintien de salaire.",
+    ans:"PROJET DE TRANSITION PROFESSIONNELLE",
+    exp:"Le PTP (ex-CIF) finance les formations longues de reconversion pour les salariés en CDI ou CDD."
+  },
+  {
+    q:"Je suis l'orientation présentée aux Elus du CSE pour expliquer les orientations futures de l'entreprise en matière de formation.",
+    ans:"STRATEGIQUE",
+    exp:"L'orientation stratégique de l'entreprise est présentée au CSE lors des consultations obligatoires sur la politique sociale."
+  },
+  {
+    q:"Service gratuit, personnalisé et confidentiel permettant d'accompagner un actif dans son projet professionnel.",
+    ans:"CEP",
+    exp:"Le Conseil en Évolution Professionnelle aide à construire un projet d'évolution ou de reconversion, sans engagement de formation."
+  },
+  {
+    q:"Action de formation reconnue depuis la loi de 2018 qui transforme une situation de travail réelle en situation d'apprentissage.",
+    ans:"AFEST",
+    exp:"L'Action de Formation En Situation de Travail est encadrée et comporte obligatoirement des phases réflexives."
+  },
+  {
+    q:"Formation en ligne ouverte à tous sans limite de participants.",
+    ans:"MOOC",
+    exp:"Le Massive Open Online Course est accessible gratuitement à un nombre illimité de personnes via internet."
+  },
+  {
+    q:"Formation en ligne réservée à un groupe restreint avec accompagnement renforcé.",
+    ans:"SPOC",
+    exp:"Le Small Private Online Course est une version fermée et encadrée du MOOC, réservée à un groupe limité."
+  },
+  {
+    q:"Formation digitale conçue spécifiquement pour une entreprise afin de diffuser sa culture et ses process.",
+    ans:"COOC",
+    exp:"Le Corporate Open Online Course est produit par l'entreprise elle-même pour former ses collaborateurs ou partenaires."
+  },
+  {
+    q:"Plateforme permettant de gérer, déployer et suivre les formations d'une organisation.",
+    ans:"LMS",
+    exp:"Le Learning Management System centralise la gestion des formations en ligne : inscriptions, contenus, suivi des apprenants."
+  },
+  {
+    q:"Dispositif permettant d'analyser ses compétences, ses motivations et de construire un projet professionnel.",
+    ans:"BILAN DE COMPETENCES",
+    exp:"Le bilan de compétences peut être financé via le CPF et se déroule avec un prestataire certifié Qualiopi."
+  }
+];
+
+/* Mot final : COMPETENCE — construit à partir d'une lettre par bonne réponse mystère */
+const FINAL_WORD = "COMPETENCE";
+// Which letter of FINAL_WORD each mystery question (0-9) unlocks
+// C-O-M-P-E-T-E-N-C-E
+const FINAL_MAP = [0,1,2,3,4,5,6,7,8,9]; // mystery Q index → letter index in FINAL_WORD
+
+/* ══ STATE ═════════════════════════════════════════════════════════ */
+let score=0, curQ=0, part=1;
+let timerInt=null, timeLeft=30;
+let totalTime=0, totalInt=null;
+let results=[]; // {correct,q,answer,exp,type}
+let mystCorrects=[]; // boolean per mystery question
+
+/* ══ AUDIO ══════════════════════════════════════════════════════════ */
+let actx;
+function ac(){if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)();return actx}
+function tone(f,t,d,g=0.25,delay=0){
+  try{
+    const ctx=ac(),o=ctx.createOscillator(),gn=ctx.createGain();
+    o.connect(gn);gn.connect(ctx.destination);
+    o.type=t;o.frequency.setValueAtTime(f,ctx.currentTime+delay);
+    gn.gain.setValueAtTime(g,ctx.currentTime+delay);
+    gn.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+delay+d);
+    o.start(ctx.currentTime+delay);o.stop(ctx.currentTime+delay+d);
+  }catch(e){}
+}
+function sfxOk(){tone(523,'sine',.1,.3);tone(659,'sine',.1,.25,.12);tone(784,'sine',.2,.3,.25)}
+function sfxKo(){tone(200,'sawtooth',.22,.3);tone(150,'sawtooth',.18,.2,.18)}
+function sfxTick(){tone(880,'square',.04,.07)}
+function sfxOut(){tone(180,'sawtooth',.4,.3)}
+function sfxStart(){[261,330,392,523].forEach((f,i)=>tone(f,'sine',.15,.3,i*.12))}
+function sfxStar(){[392,523,659,784,1047].forEach((f,i)=>tone(f,'sine',.14,.3,i*.1))}
+
+/* ══ HELPERS ════════════════════════════════════════════════════════ */
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+function norm(s){return s.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^A-Z0-9 ]/g,'').trim().replace(/\s+/g,' ')}
+
+function updateHUD(){
+  document.getElementById('scoreVal').textContent=score;
+  const t=20,p=Math.round(curQ/t*100);
+  document.getElementById('pgFill').style.width=p+'%';
+  document.getElementById('pgLabel').textContent=`Question ${curQ} / ${t}`;
+  document.getElementById('pgPct').textContent=p+' %';
+  buildDots();
+}
+
+function buildDots(){
+  const c=document.getElementById('qDots');c.innerHTML='';
+  for(let i=0;i<20;i++){
+    const d=document.createElement('div');d.className='q-dot';
+    if(i<results.length)d.classList.add(results[i].correct?'ok':'ko');
+    else if(i===curQ)d.classList.add('now');
+    c.appendChild(d);
+  }
+}
+
+function startTimer(onOut){
+  clearInterval(timerInt);timeLeft=30;updTimer();
+  timerInt=setInterval(()=>{
+    timeLeft--;updTimer();
+    if(timeLeft<=5&&timeLeft>0)sfxTick();
+    if(timeLeft<=0){clearInterval(timerInt);sfxOut();onOut();}
+  },1000);
+}
+function updTimer(){
+  const el=document.getElementById('timerVal');
+  el.textContent=timeLeft;
+  el.className='hud-val'+(timeLeft<=5?' urgent':'');
+}
+function stopTimer(){clearInterval(timerInt)}
+
+function flash(){
+  const el=document.getElementById('sf');
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),380);
+}
+
+/* ══ GAME FLOW ══════════════════════════════════════════════════════ */
+function startGame(){
+  sfxStart();
+  score=0;curQ=0;part=1;results=[];mystCorrects=[];totalTime=0;
+  clearInterval(totalInt);
+  totalInt=setInterval(()=>totalTime++,1000);
+  updateHUD();
+  showQcm();
+}
+
+function restartGame(){clearInterval(totalInt);stopTimer();show('startScreen')}
+
+function nextQ(){
+  curQ++;
+  if(part===1){
+    if(curQ<10)showQcm();
+    else{part=2;show('partScreen')}
+  } else {
+    const mi=curQ-10;
+    if(mi<10)showMyst(mi);
+    else showFinalStar();
+  }
+}
+
+function startPart2(){showMyst(0)}
+
+/* ══ QCM ════════════════════════════════════════════════════════════ */
+function showQcm(){
+  const d=QCM[curQ];
+  show('qcmScreen');updateHUD();
+  document.getElementById('qcmBadge').textContent=`Question ${curQ+1} / 10 · Manche 1 — QCM`;
+  document.getElementById('qcmText').textContent=d.q;
+  document.getElementById('qcmFb').style.display='none';
+  document.getElementById('nextQcmBtn').style.display='none';
+  const grid=document.getElementById('optsGrid');grid.innerHTML='';
+  ['A','B','C','D'].forEach((l,i)=>{
+    const b=document.createElement('button');b.className='opt-btn';
+    b.innerHTML=`<span class="opt-letter">${l}</span><span>${d.opts[i]}</span>`;
+    b.onclick=()=>pickQcm(i,d);
+    grid.appendChild(b);
+  });
+  startTimer(()=>pickQcm(-1,d));
+}
+
+function pickQcm(chosen,d){
+  stopTimer();
+  const btns=document.querySelectorAll('.opt-btn');
+  btns.forEach(b=>b.disabled=true);
+  const ok=chosen===d.ans;
+  if(ok){score+=10;flash();sfxOk()}else sfxKo();
+  if(chosen>=0)btns[chosen].classList.add(ok?'correct':'wrong');
+  btns[d.ans].classList.add('correct');
+  results.push({correct:ok,q:d.q,answer:d.opts[d.ans],exp:d.exp,type:'qcm'});
+  const fb=document.getElementById('qcmFb');
+  fb.className='feedback '+(ok?'correct':'wrong');
+  fb.innerHTML=chosen===-1
+    ?`<span class="fb-icon">⏰</span> Temps écoulé ! Réponse : <strong>${d.opts[d.ans]}</strong><br><small>${d.exp}</small>`
+    :ok
+      ?`<span class="fb-icon">✅</span> Excellent ! +10 points<br><small>${d.exp}</small>`
+      :`<span class="fb-icon">❌</span> Réponse correcte : <strong>${d.opts[d.ans]}</strong><br><small>${d.exp}</small>`;
+  fb.style.display='block';
+  document.getElementById('nextQcmBtn').style.display='flex';
+  updateHUD();
+}
+
+/* ══ MYSTERY STAR ════════════════════════════════════════════════════ */
+function buildLetterRow(word,reveal=false){
+  const c=document.getElementById('letterRow');c.innerHTML='';
+  const chars=word.split('');
+  const lastNS=chars.reduce((l,ch,i)=>ch!==' '?i:l,-1);
+  chars.forEach((ch,i)=>{
+    const cell=document.createElement('div');
+    if(ch===' '){cell.className='lc sp'}
+    else{
+      cell.className='lc';
+      if(reveal){cell.textContent=ch;cell.classList.add('revealed')}
+      else if(i===lastNS){cell.textContent=ch;cell.classList.add('hint')}
+    }
+    c.appendChild(cell);
+  });
+}
+
+function showMyst(mi){
+  const d=MYSTERY[mi];
+  curQ=mi+10;
+  show('mystScreen');updateHUD();
+  document.getElementById('mystBadge').textContent=`Question ${curQ+1} / 20 · Étoile Mystérieuse`;
+  document.getElementById('mystText').textContent=d.q;
+  const letters=d.ans.replace(/ /g,'').length;
+  const words=d.ans.split(' ').length;
+  document.getElementById('mystMeta').textContent=`${letters} lettre${letters>1?'s':''}`+(words>1?` · ${words} mots`:'');
+  buildLetterRow(d.ans,false);
+  const inp=document.getElementById('mystInput');
+  inp.value='';inp.disabled=false;inp.style.borderColor='';
+  document.getElementById('mystFb').style.display='none';
+  document.getElementById('nextMystBtn').style.display='none';
+  startTimer(()=>{
+    inp.disabled=true;
+    buildLetterRow(d.ans,true);
+    mystCorrects.push(false);
+    results.push({correct:false,q:d.q,answer:d.ans,exp:d.exp,type:'mystery'});
+    const fb=document.getElementById('mystFb');
+    fb.className='feedback wrong';
+    fb.innerHTML=`<span class="fb-icon">⏰</span> Temps écoulé ! Réponse : <strong>${d.ans}</strong><br><small>${d.exp}</small>`;
+    fb.style.display='block';
+    document.getElementById('nextMystBtn').style.display='flex';
+    sfxOut();updateHUD();
+  });
+}
+
+function checkMyst(){
+  const mi=curQ-10;
+  const d=MYSTERY[mi];
+  const inp=document.getElementById('mystInput');
+  const ok=norm(inp.value)===norm(d.ans);
+  stopTimer();inp.disabled=true;
+  if(ok){score+=15;flash();sfxOk();sfxStar()}else sfxKo();
+  mystCorrects.push(ok);
+  buildLetterRow(d.ans,true);
+  results.push({correct:ok,q:d.q,answer:d.ans,exp:d.exp,type:'mystery'});
+  const fb=document.getElementById('mystFb');
+  fb.className='feedback '+(ok?'correct':'wrong');
+  fb.innerHTML=ok
+    ?`<span class="fb-icon">⭐</span> Parfait ! +15 points<br><small>${d.exp}</small>`
+    :`<span class="fb-icon">❌</span> Réponse : <strong>${d.ans}</strong><br><small>${d.exp}</small>`;
+  fb.style.display='block';
+  inp.style.borderColor=ok?'var(--correct)':'var(--wrong)';
+  document.getElementById('nextMystBtn').style.display='flex';
+  updateHUD();
+}
+
+/* ══ FINAL STAR ══════════════════════════════════════════════════════ */
+function showFinalStar(){
+  clearInterval(totalInt);stopTimer();
+  show('finalStarScreen');updateHUD();
+
+  const container=document.getElementById('finalLetters');
+  container.innerHTML='';
+
+  // Build cells for each letter of FINAL_WORD
+  FINAL_WORD.split('').forEach((ch,i)=>{
+    const cell=document.createElement('div');cell.className='fl-cell';
+    // Find which mystery question maps to this letter position
+    const mystQ=FINAL_MAP.indexOf(i);
+    const hint=mystQ>=0&&mystQ<MYSTERY.length
+      ? MYSTERY[mystQ].ans.replace(/ .*/,'').substring(0,3)+'…'
+      : '';
+    cell.innerHTML=`<span class="fl-hint">${hint}</span><div class="fl-box" id="flb${i}"></div>`;
+    container.appendChild(cell);
+  });
+
+  // Reveal letters with animation delay
+  let revealed=0;
+  FINAL_MAP.forEach((letterIdx,mystIdx)=>{
+    if(mystCorrects[mystIdx]){
+      setTimeout(()=>{
+        const box=document.getElementById('flb'+letterIdx);
+        if(box){box.textContent=FINAL_WORD[letterIdx];box.classList.add('unlock');sfxStar();}
+        revealed++;
+        if(revealed===mystCorrects.filter(Boolean).length){
+          // Check if all revealed
+          setTimeout(checkFinalWord,600);
+        }
+      },mystIdx*300+400);
+    }
+  });
+
+  // If no correct answers, just show after delay
+  if(!mystCorrects.some(Boolean)){
+    setTimeout(checkFinalWord,800);
+  }
+}
+
+function checkFinalWord(){
+  const allOk=mystCorrects.every(Boolean);
+  const someOk=mystCorrects.some(Boolean);
+  const revealDiv=document.getElementById('finalWordReveal');
+  if(allOk){
+    document.getElementById('finalWordText').textContent=FINAL_WORD;
+    document.getElementById('finalWordSub').textContent='🏆 Le mot mystère est révélé !';
+    revealDiv.style.display='block';
+    sfxOk();flash();flash();
+  } else if(someOk){
+    const partial=FINAL_WORD.split('').map((ch,i)=>{
+      const mi=FINAL_MAP.indexOf(i);
+      return (mi>=0&&mystCorrects[mi])?ch:'_';
+    }).join(' ');
+    document.getElementById('finalWordText').textContent=FINAL_WORD;
+    document.getElementById('finalWordSub').textContent='Mot mystère : COMPÉTENCE — continuez à vous entraîner !';
+    revealDiv.style.display='block';
+  }
+}
+
+/* ══ END SCREEN ══════════════════════════════════════════════════════ */
+function showEnd(){
+  const ok=results.filter(r=>r.correct).length;
+  const pct=Math.round(ok/20*100);
+  const maxPts=10*10+10*15;
+  const sPct=Math.round(score/maxPts*100);
+
+  let trophy='📚',title='À réviser !',msg='"Chaque expertise s\'acquiert — revenez pratiquer !"';
+  if(pct>=90){trophy='🥇';title='Score légendaire !';msg='"Vous êtes le Maître du RH ! Bravo Champion(ne) !"'}
+  else if(pct>=75){trophy='🏆';title='Excellent résultat !';msg='"Un futur expert RH est né — félicitations !"'}
+  else if(pct>=55){trophy='🎓';title='Bon travail !';msg='"Encore un effort et vous décrocherez la coupe !"'}
+  else{trophy='📚';title='En route pour la maîtrise !';msg='"Bravo pour votre participation — continuez à apprendre !"'}
+
+  document.getElementById('trophyEmoji').textContent=trophy;
+  document.getElementById('endTitle').textContent=title;
+  document.getElementById('endMsg').textContent=msg;
+  document.getElementById('endScore').textContent=score;
+  document.getElementById('endPct').textContent=sPct+'%';
+  document.getElementById('endCorrect').textContent=ok+'/20';
+  document.getElementById('endTime').textContent=totalTime+'s';
+
+  const list=document.getElementById('corrList');list.innerHTML='';
+  results.forEach((r,i)=>{
+    const d=document.createElement('div');d.className='corr-item';
+    d.innerHTML=`<span class="ci-ico">${r.correct?'✅':'❌'}</span><div>
+      <div class="ci-q">Q${i+1}. ${r.q}</div>
+      <div class="ci-a">Réponse : <strong>${r.answer}</strong></div>
+      <div class="ci-a" style="margin-top:2px;font-size:11.5px">${r.exp||''}</div>
+    </div>`;
+    list.appendChild(d);
+  });
+
+  show('endScreen');
+}
+
+/* Init */
+buildDots();
+</script>
+</body>
+</html>
